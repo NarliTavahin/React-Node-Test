@@ -38,6 +38,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
 
   //////////////////////////////////////// STATES /////////////////////////////////////
   const [employeeData, setEmployeeData] = useState(initialEmployeeState);
+  const [errors, setErrors] = useState({});
 
   //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
 
@@ -45,19 +46,34 @@ const CreateUser = ({ open, setOpen, scroll }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const { firstName, lastName, username, password, phone, email } = employeeData
-    if (!firstName || !lastName || !username || !password || !phone  )
-      return alert("Make sure to provide all the fields")
+    const nextErrors = {};
+    if (!firstName) nextErrors.firstName = "First name is required";
+    if (!lastName) nextErrors.lastName = "Last name is required";
+    if (!username) nextErrors.username = "Username is required";
+    if (!password) nextErrors.password = "Password is required";
+    if (!phone) nextErrors.phone = "Phone is required";
+    if (Object.keys(nextErrors).length) {
+      setErrors(nextErrors);
+      return;
+    }
+    setErrors({});
     dispatch(createEmployee(employeeData, setOpen));
     setEmployeeData(initialEmployeeState)
   };
 
   const handleChange = (field, value) => {
     setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value, }));
+    setErrors((prevErrors) => {
+      if (!prevErrors[field]) return prevErrors;
+      const { [field]: _removed, ...rest } = prevErrors;
+      return rest;
+    });
   };
 
   const handleClose = () => {
     setOpen(false);
     setEmployeeData(initialEmployeeState)
+    setErrors({});
   };
 
   return (
@@ -93,6 +109,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     fullWidth
                     value={employeeData.firstName}
                     onChange={(e) => handleChange('firstName', e.target.value)}
+                    error={Boolean(errors.firstName)}
+                    helperText={errors.firstName}
                   />
                 </td>
               </tr>
@@ -104,6 +122,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     fullWidth
                     value={employeeData.lastName}
                     onChange={(e) => handleChange('lastName', e.target.value)}
+                    error={Boolean(errors.lastName)}
+                    helperText={errors.lastName}
                   />
                 </td>
               </tr>
@@ -115,6 +135,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     fullWidth
                     value={employeeData.username}
                     onChange={(e) => handleChange('username', e.target.value)}
+                    error={Boolean(errors.username)}
+                    helperText={errors.username}
                   />
                 </td>
               </tr>
@@ -139,6 +161,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     onChange={(e) => handleChange("password", e.target.value)}
                     size="small"
                     fullWidth
+                    error={Boolean(errors.password)}
+                    helperText={errors.password}
                   />
                 </td>
               </tr>
@@ -151,6 +175,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     value={employeeData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     fullWidth
+                    error={Boolean(errors.phone)}
+                    helperText={errors.phone}
                   />
                 </td>
               </tr>
