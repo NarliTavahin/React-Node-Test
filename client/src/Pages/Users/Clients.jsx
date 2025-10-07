@@ -13,6 +13,7 @@ import { Dropdown, Menu, MenuButton, MenuItem, menuItemClasses } from "@mui/base
 import Filter from "./Filter";
 import User from "./User";
 import DeleteClient from "./Delete";
+import EditUser from "./Edit";
 
 const blue = {
   100: "#DAECFF",
@@ -139,16 +140,22 @@ const Clients = () => {
       headerClassName: "super-app-theme--header",
       renderCell: (params) => (
         <div className="flex gap-[10px]">
-          {
-            loggedUser?.role != 'employee' &&
-            <Tooltip placement="top" title="Delete" arrow>
-              {" "}
-              <PiTrashLight
-                onClick={() => handleOpenDeleteModal(params.row._id)}
-                className="cursor-pointer text-red-500 text-[23px] hover:text-red-400"
-              />
-            </Tooltip>
-          }
+          {loggedUser?.role != "employee" && (
+            <>
+              <Tooltip placement="top" title="Delete" arrow>
+                <PiTrashLight
+                  onClick={() => handleOpenDeleteModal(params.row._id)}
+                  className="cursor-pointer text-red-500 text-[23px] hover:text-red-400"
+                />
+              </Tooltip>
+              <Tooltip placement="top" title="Edit" arrow>
+                <CiEdit
+                  onClick={() => handleOpenEditModal(params.row)}
+                  className="cursor-pointer text-green-500 text-[23px] hover:text-green-600"
+                />
+              </Tooltip>
+            </>
+          )}
         </div>
       ),
     },
@@ -187,6 +194,7 @@ const Clients = () => {
     <div className="w-full">
 
       <DeleteClient open={openDeleteModal} setOpen={setOpenDeleteModal} userId={selectedUserId} />
+      <EditUser open={openEditModal} setOpen={setOpenEditModal} />
       <Filter open={openFilters} setOpen={setOpenFilters} />
       <User open={openUser} setOpen={setOpenUser} />
 
