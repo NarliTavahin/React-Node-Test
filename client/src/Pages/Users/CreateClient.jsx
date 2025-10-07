@@ -1,8 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { createEmployee } from "../../redux/action/user";
-import { useNavigate } from "react-router-dom";
-import Topbar from "./Topbar";
+import { createClient } from "../../redux/action/user";
 import {
   Divider,
   Dialog,
@@ -11,58 +9,52 @@ import {
   Slide,
   DialogActions,
   TextField,
-  FormGroup,
-  FormControlLabel,
-  Checkbox,
 } from "@mui/material";
 import { PiNotepad, PiXLight } from "react-icons/pi";
-import { CFormSelect } from "@coreui/react";
-import { pakistanCities } from "../../constant";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
-const CreateUser = ({ open, setOpen, scroll }) => {
+const CreateClient = ({ open, setOpen, scroll }) => {
   //////////////////////////////////////// VARIABLES /////////////////////////////////////
-  const { isFetching } = useSelector((state) => state.user);
   const dispatch = useDispatch();
-  const initialEmployeeState = {
+  const { isFetching } = useSelector((state) => state.user);
+  const initialClientState = {
     firstName: "",
     lastName: "",
     username: "",
-    password: "",
     phone: "",
     email: "",
-  }
+  };
 
   //////////////////////////////////////// STATES /////////////////////////////////////
-  const [employeeData, setEmployeeData] = useState(initialEmployeeState);
+  const [clientData, setClientData] = useState(initialClientState);
   const [errors, setErrors] = useState({});
-
-  //////////////////////////////////////// USE EFFECTS /////////////////////////////////////
 
   //////////////////////////////////////// FUNCTIONS /////////////////////////////////////
   const handleSubmit = (e) => {
     e.preventDefault();
-    const { firstName, lastName, username, password, phone, email } = employeeData
     const nextErrors = {};
-    if (!firstName) nextErrors.firstName = "First name is required";
-    if (!lastName) nextErrors.lastName = "Last name is required";
-    if (!username) nextErrors.username = "Username is required";
-    if (!password) nextErrors.password = "Password is required";
-    if (!phone) nextErrors.phone = "Phone is required";
+    if (!clientData.firstName) nextErrors.firstName = "First name is required";
+    if (!clientData.lastName) nextErrors.lastName = "Last name is required";
+    if (!clientData.username) nextErrors.username = "Username is required";
+    if (!clientData.phone) nextErrors.phone = "Phone is required";
     if (Object.keys(nextErrors).length) {
       setErrors(nextErrors);
       return;
     }
     setErrors({});
-    dispatch(createEmployee(employeeData, setOpen));
-    setEmployeeData(initialEmployeeState)
+    dispatch(
+      createClient(clientData, () => {
+        setOpen(false);
+        setClientData(initialClientState);
+      })
+    );
   };
 
   const handleChange = (field, value) => {
-    setEmployeeData((prevFilters) => ({ ...prevFilters, [field]: value, }));
+    setClientData((prev) => ({ ...prev, [field]: value }));
     setErrors((prevErrors) => {
       if (!prevErrors[field]) return prevErrors;
       const { [field]: _removed, ...rest } = prevErrors;
@@ -72,7 +64,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setEmployeeData(initialEmployeeState)
+    setClientData(initialClientState);
     setErrors({});
   };
 
@@ -88,7 +80,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
         maxWidth="sm"
         aria-describedby="alert-dialog-slide-description">
         <DialogTitle className="flex items-center justify-between">
-          <div className="text-sky-400 font-primary">Add New Employee</div>
+          <div className="text-sky-400 font-primary">Add New Client</div>
           <div className="cursor-pointer" onClick={handleClose}>
             <PiXLight className="text-[25px]" />
           </div>
@@ -97,7 +89,7 @@ const CreateUser = ({ open, setOpen, scroll }) => {
           <div className="flex flex-col gap-2 p-3 text-gray-500 font-primary">
             <div className="text-xl flex justify-start items-center gap-2 font-normal">
               <PiNotepad size={23} />
-              <span>Employee Detials</span>
+              <span>Client Details</span>
             </div>
             <Divider />
             <table className="mt-4">
@@ -107,8 +99,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.firstName}
-                    onChange={(e) => handleChange('firstName', e.target.value)}
+                    value={clientData.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
                     error={Boolean(errors.firstName)}
                     helperText={errors.firstName}
                   />
@@ -120,8 +112,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.lastName}
-                    onChange={(e) => handleChange('lastName', e.target.value)}
+                    value={clientData.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
                     error={Boolean(errors.lastName)}
                     helperText={errors.lastName}
                   />
@@ -133,8 +125,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                   <TextField
                     size="small"
                     fullWidth
-                    value={employeeData.username}
-                    onChange={(e) => handleChange('username', e.target.value)}
+                    value={clientData.username}
+                    onChange={(e) => handleChange("username", e.target.value)}
                     error={Boolean(errors.username)}
                     helperText={errors.username}
                   />
@@ -147,22 +139,8 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                     size="small"
                     fullWidth
                     placeholder="Optional"
-                    value={employeeData.email}
-                    onChange={(e) => handleChange('email', e.target.value)}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <td className="flex items-start pt-2 text-lg">Password </td>
-                <td className="pb-4">
-                  <TextField
-                    type="password"
-                    value={employeeData.password}
-                    onChange={(e) => handleChange("password", e.target.value)}
-                    size="small"
-                    fullWidth
-                    error={Boolean(errors.password)}
-                    helperText={errors.password}
+                    value={clientData.email}
+                    onChange={(e) => handleChange("email", e.target.value)}
                   />
                 </td>
               </tr>
@@ -170,9 +148,9 @@ const CreateUser = ({ open, setOpen, scroll }) => {
                 <td className="flex items-start pt-2 text-lg">Phone </td>
                 <td className="pb-4">
                   <TextField
-                    type="number"
+                    type="tel"
                     size="small"
-                    value={employeeData.phone}
+                    value={clientData.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
                     fullWidth
                     error={Boolean(errors.phone)}
@@ -195,13 +173,12 @@ const CreateUser = ({ open, setOpen, scroll }) => {
             onClick={handleSubmit}
             variant="contained"
             className="bg-primary-red px-4 py-2 rounded-lg text-white mt-4 hover:bg-red-400 font-thin">
-            {isFetching ? 'Submitting...' : 'Submit'}
+            {isFetching ? "Submitting..." : "Submit"}
           </button>
         </DialogActions>
       </Dialog>
     </div>
-
   );
 };
 
-export default CreateUser;
+export default CreateClient;

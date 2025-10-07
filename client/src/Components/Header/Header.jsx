@@ -121,6 +121,7 @@ const Header = () => {
   const [state, setState] = useState({ right: false });
   const [open, setOpen] = useState(true);
   const [selectedItem, setSelectedItem] = useState(1);
+  const [timeZone] = useState(Intl.DateTimeFormat().resolvedOptions().timeZone);
 
   ////////////////////////////////////// USE EFFECTS //////////////////////////////////////
   useEffect(() => {
@@ -273,7 +274,7 @@ const Header = () => {
           </IconButton>
 
           <Typography className="text-red-400" variant="h6">
-            <TimerOutlined className="mb-1" /> {date.toLocaleTimeString()}
+            <TimerOutlined className="mb-1" /> {date.toLocaleTimeString()} ({timeZone})
           </Typography>
 
           <Tooltip title="Timer" arrow placement="bottom">
